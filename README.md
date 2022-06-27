@@ -53,7 +53,7 @@ python main.py --id_types "raw text" --ids "RAF binds Vemurafenib. RAF not bound
 python main.py --id_types "PMCID" --ids "4916225" --policy "one_step"
 ```
 
-5. Set of publications PMCID - 2132449 PMID - 20668238 PMID 23153539
+5. Set of publications PMCID - 2132449 PMID - 20668238 PMID - 23153539
 ```
 python main.py --id_types "PMCID" "PMID" "PMID" --ids "2132449" "20668238" "23153539" --policy '{\"Phosphorylation\":\"two_step\",\"Dephosphorylation\":\"two_step\"}'
 ```
