@@ -1,6 +1,7 @@
 from utils import *
 from argparse import ArgumentParser
 import os
+import json
 # id_type = 'PMCID', id = '4916225', policy = 'one_step'
 OUTPUT_DIR = os.path.join(os.path.dirname(__file__), "outputs")
 
@@ -8,7 +9,7 @@ if not os.path.exists(OUTPUT_DIR):
     os.makedirs(OUTPUT_DIR)
 
 
-def DDPmain(id_types, ids, policy, output_name):
+def DDPmain(id_types, ids, policy, output_name, attribute_name):
 
     statements = []
     for id_type, id in zip(id_types, ids):
@@ -16,14 +17,21 @@ def DDPmain(id_types, ids, policy, output_name):
         statements.extend(reach_processor.statements)
 
     unique_statements = getting_unique_statements(statements)
-    print(unique_statements)
+    print('The number of statements', len(unique_statements))
     model, obj1, obj2, obj3 = assembling_the_model(unique_statements, policy)
+
+    # print('The rules are', obj1)
+    # print('The number of rules are', len(obj1))
+    # print('The number of monomers are', len(obj2))
+    # print('The number of parameters', len(obj3))
+
     react_list, prod_list = creating_reactant_list(obj1)
     react_components, prod_components = creating_reactant_components(
         obj1, react_list, prod_list)
     react_separate, prod_separate = creating_separate(
         react_components, prod_components)
     final_list_new = final_list(react_separate, prod_separate)
+    # print(len(final_list_new))
     forward_params = forward_parameters(model)
     parameter_init = parameter_init_list(forward_params)
     react_init_parameters = react_init_params(obj1, parameter_init)
@@ -53,6 +61,8 @@ def DDPmain(id_types, ids, policy, output_name):
     final_text = creating_the_final_model(
         first_block, second_block, third_block, fourth_block, fifth_block)
     forming_the_text_file(final_text, os.path.join(OUTPUT_DIR, output_name))
+    forming_the_attribute_file(
+        obj1, obj2, obj3, final_list_new, os.path.join(OUTPUT_DIR, attribute_name))
 
 
 if __name__ == "__main__":
@@ -64,8 +74,14 @@ if __name__ == "__main__":
     parser.add_argument("--policy", type=str,
                         help="type of assembly policy, eg one_step")
     parser.add_argument("--output_txt", type=str,
-                        help="name of the output file that needs to be generated", default="output.txt")
+                        help="name of the output file that needs to be generated that shows the final model", default="output.txt")
+    parser.add_argument("--attr_txt", type=str, help="name of the output file that needs to be generated that shows the model attributes like the number of statements, rules, monomers, parameters, ODEs", default="attributes.txt")
 
     args = parser.parse_args()
+    if args.policy.startswith("{"):
+        policy = json.loads(args.policy)
+    else:
+        policy = args.policy
 
-    DDPmain(args.id_types, args.ids, args.policy, args.output_txt)
+    DDPmain(args.id_types, args.ids, policy,
+            args.output_txt, args.attr_txt)

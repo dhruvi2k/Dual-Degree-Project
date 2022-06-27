@@ -387,3 +387,10 @@ def creating_the_final_model(First_block, Second_block, Third_block, Fourth_bloc
 def forming_the_text_file(Final_text, output_path):
     with open(output_path, "w") as text_file:
         text_file.write("%s" % Final_text)
+
+
+def forming_the_attribute_file(obj1, obj2, obj3, final_list_new, output_path):
+    final_text = "The rules of the model are%s" % obj1 + "\n" + "The number of rules are%s" % len(obj1) + "\n" + "The number of monomers are%s" % len(
+        obj2) + "\n" + "The number of parameters are %s" % len(obj3) + "\n" + "The number of ODEs are %s" % len(final_list_new)
+    with open(output_path, "w") as text_file:
+        text_file.write("%s" % final_text)
